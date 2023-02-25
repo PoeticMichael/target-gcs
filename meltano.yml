@@ -20,11 +20,11 @@ plugins:
         - name: date_format
         - name: key_prefix
         - name: key_naming_convention
-        - name: file_format
+        - name: output_format
       config:
         bucket_name: datateer-managed-prt-prod-raw-data
         credentials_file: .secrets/credentials_file.json
         date_format: "%Y-%m-%d"
         key_prefix: prt-test/triton
-        key_naming_convention: "{stream}/export_date={date}/{timestamp}.{file_format}"
-        file_format: jsonl
+        key_naming_convention: "{stream}/export_date={date}/{timestamp}.{output_format}"
+        output_format: jsonl

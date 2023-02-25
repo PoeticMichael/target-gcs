@@ -72,7 +72,7 @@ class GCSSink(RecordSink):
     @property
     def output_format(self) -> str:
         """In the future maybe we will support more formats"""
-        return "jsonl"
+        return self.config.get("output_format")
 
     def process_record(self, record: dict, context: dict) -> None:
         """Process the record.
