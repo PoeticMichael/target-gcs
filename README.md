@@ -14,7 +14,7 @@ pipx install target-gcs
 
 ## Supported formats
 
-JSONL is the only supported output format
+JSONL and CSV are two supported output formats
 
 ## Configuration
 
@@ -27,6 +27,8 @@ JSONL is the only supported output format
 | date_format           | TARGET_GCS_DATE_FORMAT           | string | no       | %Y-%m-%d      | If `{date}` token is used in key_naming_convention, the date will be formatted with this format string                                                                                                                                                                                           |
 | key_prefix            | TARGET_GCS_KEY_PREFIX            | string | no       | None          | A static prefix before the generated key names. If this and `key_naming_convention` are both provided, they will be combined.                                                                                                                                                                    |
 | key_naming_convention | TARGET_GCS_KEY_NAMING_CONVENTION | string | no       | `{timestamp}` | A prefix to add to the beginning of uploaded files. The following tokens are supported: `date`, `stream`, and `timestamp`. The date format in `date_format` will be used based on [python date format codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) |
+
+| file_format            | TARGET_GCS_FILE_FORMAT            | string | no       | jsonl          | File format to be used. Currently supports `jsonl` and `csv`
 
 Property Type Required? Description
 aws_access_key_id String No S3 Access Key Id. If not provided, AWS_ACCESS_KEY_ID environment variable will be used.
