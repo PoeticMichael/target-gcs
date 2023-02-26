@@ -27,4 +27,4 @@ plugins:
         date_format: "%Y-%m-%d"
         key_prefix: prt-test/triton
         key_naming_convention: "{stream}/export_date={date}/{timestamp}.{output_format}"
-        output_format: jsonl
+        output_format: csv
