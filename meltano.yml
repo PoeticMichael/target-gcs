@@ -26,5 +26,4 @@ plugins:
         credentials_file: .secrets/credentials_file.json
         date_format: "%Y-%m-%d"
         key_prefix: prt-test/triton
-        key_naming_convention: "{stream}/export_date={date}/{timestamp}.{output_format}"
-        output_format: csv
+        key_naming_convention: "{stream}/export_date={date}/{timestamp}.jsonl"
