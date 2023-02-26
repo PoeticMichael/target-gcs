@@ -12,10 +12,14 @@ from typing import Optional
 import orjson
 import smart_open
 from google.cloud.storage import Client
-from singer_sdk.sinks import RecordSink
+from singer_sdk.sinks import BatchSink
+
+import pandas as pd
+import json
+import io
 
 
-class GCSSink(RecordSink):
+class GCSSink(BatchSink):
     """GCS target sink class."""
 
     max_size = 1000  # Max records to write in one batch
@@ -74,6 +78,10 @@ class GCSSink(RecordSink):
         """In the future maybe we will support more formats"""
         return self.config.get("output_format")
 
+    def setup(self) -> None:
+        if self.output_format == "csv":
+            self.df = pd.DataFrame()
+    
     def process_record(self, record: dict, context: dict) -> None:
         """Process the record.
 
@@ -81,8 +89,15 @@ class GCSSink(RecordSink):
         passed `context` dict from the current batch.
         """
         if self.output_format == "csv":
-            self.gcs_write_handle.write("CSV".encode('utf-8'))
-        else:
+            self.df.append(pd.DataFrame(record), ignore_index=True)
+        else: #json case
             self.gcs_write_handle.write(
                 orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
             )
+    
+    def process_batch(self, context: dict) -> None:
+        if self.output_format == "csv":
+            output_buffer = io.BytesIO()
+            self.df.to_csv(output_buffer, index=False)
+            self.gcs_write_handle.write(output_buffer.getvalue())
+
