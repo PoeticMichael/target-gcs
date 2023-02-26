@@ -81,7 +81,7 @@ class GCSSink(RecordSink):
         passed `context` dict from the current batch.
         """
         if self.output_format == "csv":
-            self.gcs_write_handle.write("CSV")
+            self.gcs_write_handle.write("CSV".encode('utf-8'))
         else:
             self.gcs_write_handle.write(
                 orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
