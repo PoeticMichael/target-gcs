@@ -37,7 +37,7 @@ class GCSSink(RecordSink):
             extraction_timestamp = round(time.time())
             base_key_name = self.config.get(
                 "key_naming_convention",
-                f"{self.stream_name}_{extraction_timestamp}.{self.output_format}",
+                f"{self.stream_name}_{extraction_timestamp}.{self.output_format}.csv",
             )
             prefixed_key_name = (
                 f'{self.config.get("key_prefix", "")}/{base_key_name}'.replace(
