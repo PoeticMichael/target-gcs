@@ -13,18 +13,16 @@ import orjson
 import smart_open
 from google.cloud.storage import Client
 from singer_sdk.sinks import BatchSink
+from typing import Any, Dict, List, Optional
 
-import pandas as pd
-import json
-import io
 
+import sys
+import csv
 
 class GCSSink(BatchSink):
     """GCS target sink class."""
 
-    max_size = 1000  # Max records to write in one batch
-
-    df = pd.DataFrame()
+    max_size = sys.maxsize  # A singe batch for now
 
     def __init__(self, target, stream_name, schema, key_properties):
         super().__init__(
@@ -78,11 +76,7 @@ class GCSSink(BatchSink):
     @property
     def output_format(self) -> str:
         """In the future maybe we will support more formats"""
-        return self.config.get("output_format")
-
-    def setup(self) -> None:
-        if self.output_format == "csv":
-            self.df = pd.DataFrame()
+        return self.config.get("output_format", "json")
     
     def process_record(self, record: dict, context: dict) -> None:
         """Process the record.
@@ -90,16 +84,30 @@ class GCSSink(BatchSink):
         Developers may optionally read or write additional markers within the
         passed `context` dict from the current batch.
         """
-        if self.output_format == "csv":
-            self.df = self.df.join(pd.Series(record))
-        else: #json case
+        if self.output_format == "json":
             self.gcs_write_handle.write(
                 orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
             )
     
     def process_batch(self, context: dict) -> None:
-        if self.output_format == "csv":
-            output_buffer = io.BytesIO()
-            self.df.to_csv(output_buffer, index=False)
-            self.gcs_write_handle.write(output_buffer.getvalue())
+        if self.output_format == "json":
+            return
+        
+        if not isinstance(context["records"], list):
+            self.logger.warning(f"No values in {self.stream_name} records collection.")
+            context["records"] = []
+
+        records: List[Dict[str, Any]] = context["records"]
+
+        if "properties" not in self.schema:
+            raise ValueError("Stream's schema has no properties defined.")
+
+        keys: List[str] = list(self.schema["properties"].keys())
+
+        writer = csv.DictWriter(self._gcs_write_handle, fieldnames=keys, dialect="excel")
+        writer.writeheader()
+        for record in enumerate(records, start=1):
+            writer.writerow(record)
+
+        return
 
