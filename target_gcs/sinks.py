@@ -102,7 +102,7 @@ class GCSSink(BatchSink):
 
         keys: List[str] = list(self.schema["properties"].keys())
 
-        writer = csv.DictWriter(self._gcs_write_handle, fieldnames=keys, dialect="excel")
+        writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
         writer.writeheader()
         for record in enumerate(self.records, start=1):
             writer.writerow(record)
