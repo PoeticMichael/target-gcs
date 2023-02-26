@@ -91,7 +91,7 @@ class GCSSink(BatchSink):
         passed `context` dict from the current batch.
         """
         if self.output_format == "csv":
-            self.df.append(pd.DataFrame(record), ignore_index=True)
+            self.df = self.df.join(pd.Series(record))
         else: #json case
             self.gcs_write_handle.write(
                 orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
