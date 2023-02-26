@@ -80,6 +80,9 @@ class GCSSink(RecordSink):
         Developers may optionally read or write additional markers within the
         passed `context` dict from the current batch.
         """
-        self.gcs_write_handle.write(
-            orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
-        )
+        if self.output_format == "csv":
+            self.gcs_write_handle.write("CSV")
+        else:
+            self.gcs_write_handle.write(
+                orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
+            )
