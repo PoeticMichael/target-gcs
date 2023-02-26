@@ -24,6 +24,8 @@ class GCSSink(BatchSink):
 
     max_size = 1000  # Max records to write in one batch
 
+    df = pd.DataFrame()
+
     def __init__(self, target, stream_name, schema, key_properties):
         super().__init__(
             target=target,
