@@ -93,6 +93,9 @@ class GCSSink(BatchSink):
         if self.output_format == "json":
             return
         
+        if not "records" in context:
+            raise ValueError("Context has no records.")
+
         if not isinstance(context["records"], list):
             self.logger.warning(f"No values in {self.stream_name} records collection.")
             context["records"] = []
