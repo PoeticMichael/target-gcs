@@ -23,6 +23,7 @@ class GCSSink(BatchSink):
     """GCS target sink class."""
 
     max_size = sys.maxsize  # A singe batch for now
+    records: List[Dict[str, Any]]
 
     def __init__(self, target, stream_name, schema, key_properties):
         super().__init__(
@@ -33,6 +34,7 @@ class GCSSink(BatchSink):
         )
         self._gcs_write_handle: Optional[FileIO] = None
         self._key_name: str = ""
+        self.records = []
 
     @property
     def key_name(self) -> str:
@@ -88,19 +90,12 @@ class GCSSink(BatchSink):
             self.gcs_write_handle.write(
                 orjson.dumps(record, option=orjson.OPT_APPEND_NEWLINE)
             )
+        else: #CSV
+            self.records.append(record)
     
     def process_batch(self, context: dict) -> None:
         if self.output_format == "json":
             return
-        
-        if not "records" in context:
-            raise ValueError("Context has no records.")
-
-        if not isinstance(context["records"], list):
-            self.logger.warning(f"No values in {self.stream_name} records collection.")
-            context["records"] = []
-
-        records: List[Dict[str, Any]] = context["records"]
 
         if "properties" not in self.schema:
             raise ValueError("Stream's schema has no properties defined.")
@@ -109,8 +104,8 @@ class GCSSink(BatchSink):
 
         writer = csv.DictWriter(self._gcs_write_handle, fieldnames=keys, dialect="excel")
         writer.writeheader()
-        for record in enumerate(records, start=1):
+        for record in enumerate(self.records, start=1):
             writer.writerow(record)
 
-        return
+        self.records = []
 
