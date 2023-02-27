@@ -109,8 +109,12 @@ class GCSSink(BatchSink):
         writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
         writer.writeheader()
         for record in enumerate(self.records, start=1):
-            logger.info(f"record {self.stream_name}: {record}")
-            writer.writerow(record)
+            logger.info(f"Processing record {self.stream_name}: {record}")
+            try
+                writer.writerow(record)
+            except:
+                logger.info(f"Failed processing batch for {self.stream.name}")
+        logger.info(f"Successfully processed batch for {self.stream.name}")
 
         self.records = []
 
