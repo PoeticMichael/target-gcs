@@ -114,7 +114,7 @@ class GCSSink(BatchSink):
             if (value["type"] == "object" or value["type"] == ["null", "object"]) and "properties" in value:
                 keys.extend(self.schema_keys(value["properties"], new_key))
             else:
-                keys.extend(new_key)
+                keys.append(new_key)
         return keys
 
 
