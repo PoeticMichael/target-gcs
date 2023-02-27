@@ -111,8 +111,8 @@ class GCSSink(BatchSink):
         keys = []
         for key, value in d.items():
             new_key = f"{prefix}.{key}" if prefix else key
-            if (value.type == "object" or value.type == ["null", "object"]) and "properties" in value:
-                keys.append(self.schema_keys(value.properties, new_key))
+            if (value["type"] == "object" or value["type"] == ["null", "object"]) and "properties" in value:
+                keys.append(self.schema_keys(value["properties"], new_key))
             else:
                 keys.append(new_key)
         return keys
