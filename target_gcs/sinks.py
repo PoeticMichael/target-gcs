@@ -97,6 +97,17 @@ class GCSSink(BatchSink):
         else: #CSV
             self.records.append(record)
     
+    def flatten_dict(self, d, prefix=''):
+        flat_dict = {}
+        for key, value in d.items():
+            new_key = f"{prefix}.{key}" if prefix else key
+            if isinstance(value, dict):
+                flat_dict.update(self.flatten_dict(value, new_key))
+            else:
+                flat_dict[new_key] = value
+        return flat_dict
+
+    
     def process_batch(self, context: dict) -> None:
         if self.output_format == "json":
             return
@@ -104,16 +115,16 @@ class GCSSink(BatchSink):
         if "properties" not in self.schema:
             raise ValueError("Stream's schema has no properties defined.")
 
-        keys: List[str] = list(self.schema["properties"].keys())
+        keys: List[str] = list(self.flatten_dict(self.schema["properties"]).keys())
         logger.info(f"Schema {self.stream_name}: {keys}")
         writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
         writer.writeheader()
         records_processed = 0
         records_failed = 0
         for record in enumerate(self.records, start=1):
-            logger.info(f"Processing record {self.stream_name}: {record[1]}")
+            logger.info(f"Processing record {self.stream_name}: {self.flatten_dict(record[1])}")
             try:
-                writer.writerow(record[1])
+                writer.writerow(self.flatten_dict(record[1]))
                 records_processed += 1
             except Exception as e:
                 records_failed += 1
