@@ -68,7 +68,7 @@ class GCSSink(BatchSink):
             credentials_path = self.config.get("credentials_file")
             self._gcs_write_handle = smart_open.open(
                 f'gs://{self.config.get("bucket_name")}/{self.key_name}',
-                "wb",
+                "w",
                 transport_params=dict(
                     client=Client.from_service_account_json(credentials_path)
                 ),
