@@ -105,12 +105,11 @@ class GCSSink(BatchSink):
             raise ValueError("Stream's schema has no properties defined.")
 
         keys: List[str] = list(self.schema["properties"].keys())
-        logger.info("Schema:")
-        logger.info(keys)
+        logger.info(f"Schema {self.stream_name}: {keys}")
         writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
         writer.writeheader()
         for record in enumerate(self.records, start=1):
-            logger.info(record)
+            logger.info(f"record {self.stream_name}: {record}")
             writer.writerow(record)
 
         self.records = []
