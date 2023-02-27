@@ -110,7 +110,7 @@ class GCSSink(BatchSink):
         writer.writeheader()
         for record in enumerate(self.records, start=1):
             logger.info(f"Processing record {self.stream_name}: {record}")
-            try
+            try:
                 writer.writerow(record)
             except:
                 logger.info(f"Failed processing batch for {self.stream.name}")
