@@ -19,6 +19,10 @@ from typing import Any, Dict, List, Optional
 import sys
 import csv
 
+import singer
+
+logger = singer.get_logger()
+
 class GCSSink(BatchSink):
     """GCS target sink class."""
 
