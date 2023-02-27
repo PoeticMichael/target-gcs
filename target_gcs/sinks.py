@@ -101,7 +101,7 @@ class GCSSink(BatchSink):
         flat_dict = {}
         for key, value in d.items():
             new_key = f"{prefix}.{key}" if prefix else key
-            if isinstance(value, dict):
+            if isinstance(value, dict) and key != ".+":
                 flat_dict.update(self.flatten_dict(value, new_key))
             else:
                 flat_dict[new_key] = value
