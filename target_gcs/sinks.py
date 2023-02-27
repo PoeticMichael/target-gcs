@@ -128,7 +128,7 @@ class GCSSink(BatchSink):
 
         logger.info(f"Raw schema of {self.stream_name}: {self.schema}")
         keys = self.schema_keys(self.schema["properties"])
-        logger.info(f"Schema keys {self.stream_name}: {keys}")
+        logger.info(f"Schema keys for {self.stream_name}: {keys}")
         writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel", extrasaction="ignore")
         writer.writeheader()
         records_processed = 0
