@@ -111,9 +111,9 @@ class GCSSink(BatchSink):
         records_processed = 0
         records_failed = 0
         for record in enumerate(self.records, start=1):
-            logger.info(f"Processing record {self.stream_name}: {record}")
+            logger.info(f"Processing record {self.stream_name}: {record[1]}")
             try:
-                writer.writerow(record)
+                writer.writerow(record[1])
                 records_processed += 1
             except Exception as e:
                 records_failed += 1
