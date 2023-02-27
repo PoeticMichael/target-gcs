@@ -113,8 +113,8 @@ class GCSSink(BatchSink):
             try:
                 writer.writerow(record)
             except:
-                logger.info(f"Failed processing batch for {self.stream.name}")
-        logger.info(f"Successfully processed batch for {self.stream.name}")
+                logger.info(f"Failed processing batch for {self.stream_name}")
+        logger.info(f"Successfully processed batch for {self.stream_name}")
 
         self.records = []
 
