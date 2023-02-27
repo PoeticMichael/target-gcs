@@ -101,11 +101,22 @@ class GCSSink(BatchSink):
         flat_dict = {}
         for key, value in d.items():
             new_key = f"{prefix}.{key}" if prefix else key
-            if isinstance(value, dict) and key != ".+":
+            if isinstance(value, dict):
                 flat_dict.update(self.flatten_dict(value, new_key))
             else:
                 flat_dict[new_key] = value
         return flat_dict
+    
+    def schema_keys(self, d, prefix=''):
+        keys = []
+        for key, value in d.items():
+            new_key = f"{prefix}.{key}" if prefix else key
+            if (value.type == "object" or value.type == ["null", "object"]) and "properties" in value:
+                keys.append(self.schema_keys(value.properties, new_key))
+            else:
+                keys.append(new_key)
+        return keys
+
 
     
     def process_batch(self, context: dict) -> None:
@@ -116,9 +127,9 @@ class GCSSink(BatchSink):
             raise ValueError("Stream's schema has no properties defined.")
 
         logger.info(f"Raw schema of {self.stream_name}: {self.schema}")
-        keys: List[str] = list(self.flatten_dict(self.schema["properties"]).keys())
-        logger.info(f"Schema {self.stream_name}: {keys}")
-        writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
+        keys = self.schema_keys(self.schema["properties"])
+        logger.info(f"Schema keys {self.stream_name}: {keys}")
+        writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel", extrasaction="ignore")
         writer.writeheader()
         records_processed = 0
         records_failed = 0
