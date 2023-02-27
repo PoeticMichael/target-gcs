@@ -115,6 +115,7 @@ class GCSSink(BatchSink):
         if "properties" not in self.schema:
             raise ValueError("Stream's schema has no properties defined.")
 
+        logger.info(f"Raw schema of {self.stream_name}: {self.schema}")
         keys: List[str] = list(self.flatten_dict(self.schema["properties"]).keys())
         logger.info(f"Schema {self.stream_name}: {keys}")
         writer = csv.DictWriter(self.gcs_write_handle, fieldnames=keys, dialect="excel")
